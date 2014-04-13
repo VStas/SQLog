@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 
 # test
-# ( ) <-   _ AND NOT +  - * / =  > <  <=  >=  !=  var Pred   954  !  @
+# ( ) <-   _ AND NOT +  - * / =  > <  <=  >=  !=  var Pred   954 ,  'Hello 4343' (
 
 import sys
 
 class Lexer:
     # Константы
-    LPAR, RPAR, ARR, UND, AND, NOT, PLUS, MIN, MUL, DEL, EQU, MORE, LESS, LESSEQU, MOREEQU, NOTEQU, VARIABLE, PRED, NUMBER, EXCL, EOF = range(21)
+    LPAR, RPAR, ARR, UND, AND, NOT, PLUS, MIN, MUL, DEL, EQU, MORE, LESS, LESSEQU, MOREEQU, NOTEQU, VARIABLE, PRED, NUMBER, EXCL, EOF, COMM, QUO, STRING = range(24)
 
     # Специальные символы языка
     SYMBOLS = {
@@ -22,7 +22,8 @@ class Lexer:
         '=': EQU,
         '>': MORE,
         '<': LESS,
-        '!': EXCL   # Недопустимый символ, ожидаем !=
+        '!': EXCL,   # Недопустимый символ, ожидаем !=
+        ',': COMM
     }
 
     # Еще есть      '<-': ARR
@@ -43,7 +44,8 @@ class Lexer:
         self.ch = sys.stdin.read(1)
 
     def err(self, msg):
-        print(msg)
+        print("Lexer error: " + msg)
+        sys.exit(1)
 
 
     def next_tok(self):
@@ -52,7 +54,8 @@ class Lexer:
 
         while self.sym == None:
 
-            if len(self.ch) == 0:
+            #if len(self.ch) == 0: # FOR DEBUG
+            if self.ch == '\n':
                 self.sym = Lexer.EOF
 
             elif self.ch.isspace():
@@ -84,7 +87,7 @@ class Lexer:
                         self.sym = Lexer.NOTEQU
                         self.getchar()
                     else:
-                        self.err("Lexer error, expected !=")
+                        self.err("expected !=")
 
                 else:
                     self.sym = Lexer.SYMBOLS[self.ch]
@@ -115,13 +118,29 @@ class Lexer:
                     else:
                         self.sym = Lexer.PRED
                     self.value = word
-            else:
-                self.err("Lexer error, unknown symbol " + self.ch)
+
+            elif self.ch == '\'':
+                str = ''
                 self.getchar()
 
-lex = Lexer()
-while True:
-    lex.next_tok()
-    print("token: " + str(lex.sym) + " value: " + str(lex.value))
+                while self.ch != '\'':
+                    str = str + self.ch
+                    self.getchar()
+
+                self.getchar()
+
+                self.sym = Lexer.STRING
+                self.value = str
+
+            else:
+                self.err("unknown symbol " + self.ch)
+                self.getchar()
+
+# DEBUG
+#
+# lex = Lexer()
+# while True:
+#     lex.next_tok()
+#     print("token: " + str(lex.sym) + " value: " + str(lex.value))
 
 
