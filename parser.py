@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from main import Lexer
+from lexer import Lexer
 import sys
 
 class Parser:
