@@ -11,6 +11,7 @@ class Parser:
 
         self.model = {
             'select_vars': [],
+            'same_var_diff_cols': False,
             'var_definitions': {},
             'from_tables': [],
             'comparisons': [],
@@ -70,6 +71,7 @@ class Parser:
 
                         if varname in self.model['var_definitions']:
                             self.model['var_definitions'][varname].append(colName)
+                            self.model['same_var_diff_cols'] = True
                         else:
                             self.model['var_definitions'][varname] = [colName]
 
@@ -141,24 +143,23 @@ class Parser:
 
     def parse(self):
         self.parse_rule()
+        return self.model
 
+#config = {}
+#execfile("db_config.conf", config)
 
-
-config = {}
-execfile("db_config.conf", config)
-#print(config['tables'])
-
-
-lex = Lexer()
-parser = Parser(lex, config)
+#lex = Lexer()
+#parser = Parser(lex, config)
 #print(parser.parse_varlist())
 #print(parser.parse_rel_atom())
 #print(parser.parse_expr())
 
 #parser.parse_atom()
 #parser.parse_left()
-parser.parse()
+#parser.parse()
 # test:
 # A(x,t)<- x = 3 AND Country(x,_ , t) AND t < 'Gena' AND City(t)
+# A(x,t)<- x = 'RUS' AND Country(x,_ , t) AND t < 'Gena' AND City(t)
+# A(x,t)<- x = 'RUS' AND Country(x,_ , t)
 
-print(parser.model)
+#print(parser.model)
