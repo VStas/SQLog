@@ -62,7 +62,7 @@ class Parser:
 
                 self.model['not_exists'][tableName] = var_column
             else:
-                self.model['from_tables'].append(tableName) # если таблица уже есть, то будет 2 раза. Надо подумать, ок ли это
+                self.model['from_tables'].append(tableName) # если таблица уже есть, то будет 2 раза. Надо подумать, ок ли это. не ок
 
                 for i in range(len(arglist)):
                     varname = arglist[i]

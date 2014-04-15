@@ -32,10 +32,11 @@ class SQLog:
 
     def start(self):
         self.model = self.parser.parse()
-        print(self.model)
+        #print(self.model)
         sql = self.compose_sql()
-
+        print('')
         print(sql)
+        print('')
         Database.execute(self.parser.config, sql)
 
     def compose_sql(self):
@@ -72,6 +73,18 @@ class SQLog:
                 if len(columns) > 1:
                     for i in range(1, len(columns)):
                         where_clauses.append(columns[0] + "=" + columns[i])
+
+        if any(self.model['not_exists']):
+            for table in self.model['not_exists']:
+                table_arr = self.model['not_exists'][table]
+                if len(table_arr) > 0:
+                    clauses = []
+                    for clause in table_arr:
+                        clauses.append(self.get_var_definition(clause[0]) + ' = ' + clause[1])
+
+
+                    sql = 'NOT EXISTS (SELECT 1 FROM ' + table + ' WHERE ' + ' AND '.join(clauses) + ')'
+                    where_clauses.append(sql)
 
 
         return 'WHERE ' + ' AND '.join(where_clauses)
@@ -119,4 +132,4 @@ sqlog.start()
 
 # CitiesMillion(cityname, countryname) <- City(_, cityname, code, _, pop) AND Country(code, countryname) AND pop > 5000000
 
-# NoEnglishCountries(name) <- Country(code, name) AND CountryLanguage(code) AND CountryLanguage(lang) AND NOT CountryLanguage(code, lang) AND lang = 'English'
+# NotCapitals(cityname, code) <- City(id, cityname, code) AND NOT Country(_, _, _, _, _, _, _, _, _, _, _, _, _, id)
